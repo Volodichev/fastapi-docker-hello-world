@@ -7,6 +7,16 @@ BACKEND_CORS_ORIGINS = ["*"]
 METHODS = ["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"]
 HEADERS = ["Content-Type", "Set-Cookie", "Access-Control-Allow-Headers", "Access-Control-Allow-Origin",
            "Authorization"]
+CONVENTION = {
+    "all_column_names": lambda constraint, table: "_".join(
+        [column.name for column in constraint.columns.values()]
+    ),
+    "ix": "ix__%(table_name)s__%(all_column_names)s",
+    "uq": "uq__%(table_name)s__%(all_column_names)s",
+    "ck": "ck__%(table_name)s__%(constraint_name)s",
+    "fk": "fk__%(table_name)s__%(all_column_names)s__%(referred_table_name)s",
+    "pk": "pk__%(table_name)s",
+}
 
 
 class AppSettings(BaseSettings):
@@ -20,6 +30,17 @@ class AppSettings(BaseSettings):
     SEND_LOGS: bool = False
     SEND_ERRORS: bool = False
     LOG_DELAY: float = 0.5
-
+    POSTGRES_HOST: str = "localhost"
+    POSTGRES_PORT: int = 5432
+    POSTGRES_USER: str = ""
+    POSTGRES_PASSWORD: str = ""
+    POSTGRES_DB: str = ""
 
 settings = AppSettings()
+
+DB_HOST = settings.POSTGRES_HOST
+DB_PORT = settings.POSTGRES_PORT
+DB_NAME = settings.POSTGRES_DB
+DB_USER = settings.POSTGRES_USER
+DB_PASS = settings.POSTGRES_PASSWORD
+DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"

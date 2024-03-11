@@ -1,0 +1,43 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:15.0-alpine
+    container_name: hello_backend_db
+    env_file:
+      - ./.env
+    ports:
+      - "5433:5432"
+    volumes:
+      - ../db_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: always
+
+  backend:
+    build:
+      dockerfile: ./Dockerfile
+      context: .
+    container_name: hello_backend
+    env_file:
+      - ./.env
+    ports:
+      - "8081:8001"
+    environment:
+      POSTGRES_HOST: db
+    volumes:
+      - ./logs:/src/logs
+      - ./files:/src/files
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail http://127.0.0.1:8001/healthcheck || exit 1
+      interval: 30s
+      retries: 2
+      start_period: 10s
+      timeout: 10s
+    restart: always

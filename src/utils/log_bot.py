@@ -5,7 +5,7 @@ from typing import Iterable, Optional, Union
 import httpx
 from httpx import Response
 
-from src.config import settings, VERSION
+from config import settings, VERSION
 
 LOG_DELAY = settings.LOG_DELAY
 
@@ -81,7 +81,8 @@ class Bot:
                     return response.json()
 
             except Exception as err:
-                logger.warning(f"SEND Bot error: {err}")
+                # logger.warning(f"SEND Bot error: {err}")
+                print(f"SEND Bot error: {err}")
 
 
 bot: Bot = Bot(bot_token=settings.TELEBOT_TOKEN, chat_id=settings.LOG_TG_CHANNEL)

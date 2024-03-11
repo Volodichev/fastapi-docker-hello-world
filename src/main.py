@@ -5,8 +5,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.requests import Request
 
-from src.config import settings, VERSION, BACKEND_CORS_ORIGINS, METHODS, HEADERS
-from utils.info_bot import bot
+from config import settings, VERSION, BACKEND_CORS_ORIGINS, METHODS, HEADERS
+from utils.log_bot import bot
 
 PROJECT_NAME = settings.PROJECT_NAME
 PROJECT_DESCRIPTION = settings.PROJECT_DESCRIPTION
@@ -47,14 +47,14 @@ async def healthcheck():
 
 # app.mount('/api/v1', apiv1)
 
-
-@app.middleware("http")
-async def middleware_events(request: Request, call_next):
-    if ENVIRONMENT != "local":
-        request.scope["scheme"] = "https"
-    response = await call_next(request)
-
-    return response
+# @app.middleware("http")
+# async def middleware_events(request: Request, call_next):
+#     """fix for sqladmin support"""
+#     if ENVIRONMENT != "local":
+#         request.scope["scheme"] = "https"
+#     response = await call_next(request)
+#
+#     return response
 
 
 @app.get('/')
